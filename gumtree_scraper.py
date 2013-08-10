@@ -110,7 +110,8 @@ class GumtreeScraper:
 
         with open('output.html', 'w') as f:
             for listings_wrapper in souped.find_all("div", { "class" : "rs-ad-field", "class" : "rs-ad-detail"}):
-                f.write(listings_wrapper.__repr__())
+                print listings_wrapper
+                #f.write(listings_wrapper.__repr__())
 
     def configure_logging(self):
         logger.setLevel(logging.DEBUG)
