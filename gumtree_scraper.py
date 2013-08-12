@@ -65,8 +65,9 @@ class GumtreeScraper:
 
         else:
             #request = requests.get("http://www.gumtree.com.au/search?q=%s&search_location=%s&category=%s" % (self.query, self.location, self.category), headers=REQUEST_HEADERS)
-            logger.debug('fetching')
-            request = requests.get("http://www.gumtree.com.au/s-flatshare-houseshare/west-end-brisbane/c18294l3005921?ad=offering", headers=REQUEST_HEADERS)
+            url = "http://www.gumtree.com.au/s-flatshare-houseshare/west-end-brisbane/page-1/c18294l3005921?ad=offering&price=0.00__200.00"
+            logger.debug('Query URL: {0}'.format(url))
+            request = requests.get(url, headers=REQUEST_HEADERS)
 
             with open(self.cache_file, 'w') as f:
                 f.write(request.content)
@@ -108,10 +109,13 @@ class GumtreeScraper:
         logger.debug('done souping')
         #for listings_wrapper in souped.find_all("div", class_="rs-ad-field rs-ad-detail"):
 
-        with open('output.html', 'w') as f:
-            for listings_wrapper in souped.find_all("div", { "class" : "rs-ad-field", "class" : "rs-ad-detail"}):
-                print listings_wrapper
-                #f.write(listings_wrapper.__repr__())
+        listing_query = souped.find_all("div", { "class" : "rs-ad-field", "class" : "rs-ad-detail"})
+
+        logger.debug('Number of listings: {0}'.format(len(listing_query)))
+
+        for listings_wrapper in listing_query:
+            print listings_wrapper
+
 
     def configure_logging(self):
         logger.setLevel(logging.DEBUG)
