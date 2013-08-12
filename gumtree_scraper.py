@@ -75,8 +75,6 @@ class GumtreeScraper:
 
         self.parse(content)
 
-        #self.data = request.content
-        #self.pickle()
         exit(0)
 
         if request.status_code == 200:
@@ -104,17 +102,21 @@ class GumtreeScraper:
             return []
 
     def parse(self, content):
-        logger.debug('souping')
+        logger.debug('Souping')
         souped = BeautifulSoup(content, "html5lib")
-        logger.debug('done souping')
-        #for listings_wrapper in souped.find_all("div", class_="rs-ad-field rs-ad-detail"):
+        logger.debug('Souping complete')
 
         listing_query = souped.find_all("div", { "class" : "rs-ad-field", "class" : "rs-ad-detail"})
 
         logger.debug('Number of listings: {0}'.format(len(listing_query)))
 
-        for listings_wrapper in listing_query:
-            print listings_wrapper
+        for listing in listing_query:
+            title = listing.find("a", class_="rs-ad-title").contents
+            item_instance = GTItem(title=title)
+            item_instance.url = listing.find("a", class_="rs-ad-title").get("href")
+            item_instance.summary = listing.find("p", class_="word-wrap").contents
+
+            print listing
 
 
     def configure_logging(self):
@@ -127,6 +129,26 @@ class GumtreeScraper:
         logger.addHandler(ch)
         pass
 
+class GTItem:
+    """
+    An individual gumtree item
+    """
+    def __init__(self, title, summary="", description="", thumbnail="", price="", location="", adref="", url="", contact_name="", contact_number="", images=[]):
+        self.title = title
+        self.summary = summary
+        self.thumbnail = thumbnail
+        self.price = price
+        self.location = location
+        self.adref = adref
+        self.url = url
+
+        self._description = None
+        self._contact_name = None
+        self._contact_number = None
+        self._images = None
+
+        self._longitude = None
+        self.latitude = None
 
 if __name__ == "__main__":
     print "Running GumtreeScraper in stand-alone-mode"
