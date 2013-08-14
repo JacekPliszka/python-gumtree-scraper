@@ -48,6 +48,8 @@ class GumtreeScraper:
         self.data = []
         self.cache_file = 'request.cache'
 
+        self.base_url = 'http://www.gumtree.com.au'
+
 
     def process(self):
         self.listing_results = self.doSearch()
@@ -65,7 +67,7 @@ class GumtreeScraper:
 
         else:
             #request = requests.get("http://www.gumtree.com.au/search?q=%s&search_location=%s&category=%s" % (self.query, self.location, self.category), headers=REQUEST_HEADERS)
-            url = "http://www.gumtree.com.au/s-flatshare-houseshare/west-end-brisbane/page-1/c18294l3005921?ad=offering&price=0.00__200.00"
+            url = "{0}/s-flatshare-houseshare/west-end-brisbane/page-1/c18294l3005921?ad=offering&price=0.00__200.00".format(self.base_url)
             logger.debug('Query URL: {0}'.format(url))
             request = requests.get(url, headers=REQUEST_HEADERS)
 
@@ -113,10 +115,11 @@ class GumtreeScraper:
         for listing in listing_query:
             title = listing.find("a", class_="rs-ad-title").contents
             item_instance = GTItem(title=title)
-            item_instance.url = listing.find("a", class_="rs-ad-title").get("href")
+            item_instance.url = self.base_url + listing.find("a", class_="rs-ad-title").get("href")
             item_instance.summary = listing.find("p", class_="word-wrap").contents
 
             print listing
+            print '<a href="{0}">Link</a>'.format(item_instance.url)
 
 
     def configure_logging(self):
