@@ -32,6 +32,7 @@ import re
 import pytz
 import datetime
 
+from tzlocal import get_localzone
 from bs4 import BeautifulSoup
 from docopt import docopt
 
@@ -135,8 +136,14 @@ class GTItem:
 if __name__ == "__main__":
     print "Running GumtreeScraper in stand-alone-mode"
 
+    #server_tz = pytz.timezone("UTC")
+    server_tz = get_localzone()
     local_tz = pytz.timezone("Australia/Brisbane")
-    print local_tz.localize(datetime.datetime.now())
+
+    typical_datetime_object = datetime.datetime.now()
+    now_server = server_tz.localize(typical_datetime_object)
+    now_local = now_server.astimezone(server_tz)
+    print now_local
 
     gumtree_scraper = GumtreeScraper('s-flatshare-houseshare')
     gumtree_scraper.process()

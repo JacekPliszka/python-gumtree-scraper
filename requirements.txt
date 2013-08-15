@@ -3,3 +3,4 @@ requests==1.1.0
 html5lib==0.95
 docopt==0.6.1
 pytz==2013b
+tzlocal==1.0
