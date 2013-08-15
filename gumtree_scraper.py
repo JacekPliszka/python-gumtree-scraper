@@ -29,6 +29,8 @@ import os, sys
 import logging
 import requests
 import re
+import pytz
+import datetime
 
 from bs4 import BeautifulSoup
 from docopt import docopt
@@ -77,31 +79,6 @@ class GumtreeScraper:
 
         self.parse(content)
 
-        exit(0)
-
-        if request.status_code == 200:
-            # Got a valid response
-
-            listing_results = []
-
-            souped = BeautifulSoup(request.text, "html5lib")
-            for listings_wrapper in souped.find_all("ul", class_="ad-listings"):
-                for listing in listings_wrapper.find_all("li", class_="offer-sale"):
-                    title = listing.find("a", class_="description").get("title")
-                    item_instance = GTItem(title=title)
-                    item_instance.url = listing.find("a", class_="description").get("href")
-                    item_instance.price = listing.find("span", class_="price").string
-                    item_instance.summary = listing.find("div", class_="ad-description").find("span").string
-                    item_instance.location =  listing.find("span", class_="location").string
-                    item_instance.thumbnail = listing.find("img", class_="thumbnail").get("src")
-                    item_instance.adref = listing.find("div", class_="ad-save").get("data-ad-id")
-
-                    listing_results.append(item_instance)
-            return listing_results
-        else:
-            # TODO: Add error handling
-            print "Server returned code %s" % request.status_code
-            return []
 
     def parse(self, content):
         logger.debug('Souping')
@@ -132,6 +109,7 @@ class GumtreeScraper:
         logger.addHandler(ch)
         pass
 
+
 class GTItem:
     """
     An individual gumtree item
@@ -153,7 +131,12 @@ class GTItem:
         self._longitude = None
         self.latitude = None
 
+
 if __name__ == "__main__":
     print "Running GumtreeScraper in stand-alone-mode"
+
+    local_tz = pytz.timezone("Australia/Brisbane")
+    print local_tz.localize(datetime.datetime.now())
+
     gumtree_scraper = GumtreeScraper('s-flatshare-houseshare')
     gumtree_scraper.process()
