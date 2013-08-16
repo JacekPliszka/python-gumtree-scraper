@@ -176,6 +176,10 @@ class GumtreeScraper:
 if __name__ == "__main__":
     print "Running GumtreeScraper in stand-alone-mode"
 
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    os.chdir(dname)
+
     #server_tz = pytz.timezone("UTC")
     server_tz = get_localzone()
     local_tz = pytz.timezone("Australia/Brisbane")
