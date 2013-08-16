@@ -1,4 +1,4 @@
-class GTListingItem:
+class GTAdItem:
     """
     An individual gumtree item
     """
@@ -21,6 +21,3 @@ class GTListingItem:
 
         self._longitude = None
         self.latitude = None
-
-        self.body_raw = None
-        self.features_raw = None

@@ -12,6 +12,7 @@ Usage:
    gumtree_scraper.py
    gumtree_scraper.py --load-from-cache
    gumtree_scraper.py --debug-ad
+   gumtree_scraper.py --output <output_file>
 
 Options:
     -h --help     Show this screen.
@@ -19,7 +20,9 @@ Options:
 
 
 """
-from entities.GTItem import GTListingItem
+from entities.GTAdItem import GTAdItem
+from entities.GTListingItem import GTListingItem
+from renderers.default_renderer import DefaultRenderer
 
 __author__ = "Indika Piyasena"
 
@@ -33,6 +36,7 @@ import requests
 import re
 import pytz
 import datetime
+import time
 
 from tzlocal import get_localzone
 from bs4 import BeautifulSoup
@@ -63,7 +67,6 @@ class GumtreeScraper:
                 self.parse_ad(f.read())
             exit(0)
 
-
         self.listing_results = self.doSearch()
         print self.listing_results
         pass
@@ -89,7 +92,17 @@ class GumtreeScraper:
                 content = request.content
 
         listings = self.parse(content)
-        self.process_listing_item(listings[0])
+        #self.process_listing_item(listings[0])
+        default_renderer = DefaultRenderer()
+
+        if self.arguments['--output']:
+            output_file = self.arguments['<output_file>']
+        else:
+            output_file = 'output.html'
+
+        with open(output_file, 'w') as f:
+            rendered = default_renderer.render(listings)
+            f.write(rendered)
 
 
     def parse(self, content):
@@ -105,12 +118,12 @@ class GumtreeScraper:
         items = []
 
         for listing in listing_query:
-            title = listing.find("a", class_="rs-ad-title").contents
+            title = listing.find("a", class_="rs-ad-title").contents[0]
             item_instance = GTListingItem(title=title)
             item_instance.url = self.base_url + listing. \
                 find("a", class_="rs-ad-title").get("href")
             item_instance.summary = listing.find("p",
-                                                 class_="word-wrap").contents
+                                                 class_="word-wrap").contents[0]
 
             items.append(item_instance)
 
@@ -127,6 +140,9 @@ class GumtreeScraper:
             f.write(request.content)
 
         content = request.content
+        result_tuple = self.parse_ad(content)
+        listing_item.body_raw = result_tuple[0]
+        listing_item.features_raw = result_tuple[1]
 
         pass
 
@@ -134,8 +150,17 @@ class GumtreeScraper:
         logger.debug('Souping ad')
         souped = BeautifulSoup(ad_content, "html5lib")
         main_box = souped.find("div", {"class": "white-box"})
-        main_content = main_box.find("p", {"id":"vip-description"})
-        print main_content
+        main_content = main_box.find("p", {"id": "vip-description"})
+        features = main_box.find("div", {"id": "vip-ad-attr-features"})
+        return main_content, features
+
+
+    def sleep(self):
+        random_time = 5
+        logger.debug('Sleeping for: {0}'.format(random_time))
+        time.sleep(random_time)
+        pass
+
 
     def configure_logging(self):
         logger.setLevel(logging.DEBUG)
