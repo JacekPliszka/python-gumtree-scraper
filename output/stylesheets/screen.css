@@ -70,4 +70,32 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 /* line 8, ../sass/screen.scss */
 .gt-ad {
   padding: 10px;
+  border: 1px solid #ddd;
+  font-family: 'Open Sans', sans-serif;
+}
+/* line 13, ../sass/screen.scss */
+.gt-ad a {
+  padding: 0.8em;
+  color: green;
+  text-decoration: none;
+  font-size: 18px;
+}
+/* line 21, ../sass/screen.scss */
+.gt-ad .summary {
+  display: none;
+}
+/* line 26, ../sass/screen.scss */
+.gt-ad .body_raw {
+  padding: 1.0em;
+}
+/* line 30, ../sass/screen.scss */
+.gt-ad .features_raw {
+  color: darkgray;
+  font-size: 14px;
+  padding: 1.0em;
+  height: 100px;
+  -moz-column-count: 4;
+  -moz-column-gap: 20px;
+  -webkit-column-count: 4;
+  -webkit-column-gap: 20px;
 }

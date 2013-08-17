@@ -7,4 +7,39 @@
 
 .gt-ad {
   padding: 10px;
+  border: 1px solid #ddd;
+  font-family: 'Open Sans', sans-serif;
+
+  a {
+    padding: 0.8em;
+    color: green;
+    //color: #FFFFFF;
+    text-decoration: none;
+    font-size: 18px;
+  }
+
+  .summary {
+    //visibility: hidden;
+    display: none;
+  }
+
+  .body_raw {
+    padding: 1.0em;
+  }
+
+  .features_raw {
+    //background: gainsboro;
+    color: darkgray;
+    font-size: 14px;
+    padding: 1.0em;
+    height: 100px;
+    -moz-column-count: 4;
+    -moz-column-gap: 20px;
+    -webkit-column-count: 4;
+    -webkit-column-gap: 20px;
+    //-webkit-column-break-inside: avoid;
+  }
+
 }
+
+
