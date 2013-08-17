@@ -111,7 +111,9 @@ class GumtreeScraper:
         listings = self.parse(content, listing_query)
         for listing in listings:
             ad_query = GumtreeAdQuery(listing.url)
-            self.fetch_ad(ad_query)
+            main_content, features = self.fetch_ad(ad_query)
+            listing.body_raw = main_content
+            listing.features_raw = features
         return listings
 
     def fetch_ad(self, ad_query):
@@ -129,6 +131,7 @@ class GumtreeScraper:
                 f.write(content)
             self.sleep()
 
+        return self.parse_ad(content)
 
     def parse(self, content, query_object):
         logger.debug('Souping')
