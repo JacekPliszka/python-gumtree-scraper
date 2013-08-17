@@ -20,6 +20,7 @@ Options:
 
 
 """
+import shutil
 from entities.GTAdItem import GTAdItem
 from entities.GTListingItem import GTListingItem
 from renderers.default_renderer import DefaultRenderer
@@ -58,6 +59,12 @@ class GumtreeScraper:
         self.cache_file = 'cache/request.cache'
 
         self.base_url = 'http://www.gumtree.com.au'
+
+        self.jobs = [
+            'http://www.gumtree.com.au/s-flatshare-houseshare/west-end-brisbane/page-1/c18294l3005921?ad=offering&price=0.00__200.00',
+            'http://www.gumtree.com.au/s-flatshare-houseshare/highgate-hill-brisbane/page-1/c18294l3005884?ad=offering&price=0.00__200.00',
+            'http://www.gumtree.com.au/s-flatshare-houseshare/spring-hill-brisbane/page-1/c18294l3005758?ad=offering&price=0.00__200.00',
+        ]
 
 
     def process(self):
@@ -98,11 +105,12 @@ class GumtreeScraper:
         if self.arguments['--output']:
             output_file = self.arguments['<output_file>']
         else:
-            output_file = 'output.html'
+            output_file = 'output/feed.html'
 
         with open(output_file, 'w') as f:
+            f.write(str(datetime.datetime.now()))
             rendered = default_renderer.render(listings)
-            f.write(rendered)
+            f.write(rendered.encode('utf-8').strip())
 
 
     def parse(self, content):
