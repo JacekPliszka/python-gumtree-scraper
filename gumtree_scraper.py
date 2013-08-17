@@ -23,6 +23,7 @@ Options:
 import shutil
 from entities.GTAdItem import GTAdItem
 from entities.GTListingItem import GTListingItem
+from entities.GTQuery import GumtreeQuery
 from renderers.default_renderer import DefaultRenderer
 
 __author__ = "Indika Piyasena"
@@ -47,24 +48,18 @@ logger = logging.getLogger(__name__)
 
 
 class GumtreeScraper:
-    def __init__(self, category, query="", location=""):
+    def __init__(self):
         self.configure_logging()
         self.arguments = docopt(__doc__, version='GumtreeScraper 0.1')
 
-        self.category = category
-        self.query = query
-        self.location = location
-
-        self.data = []
-        self.cache_file = 'cache/request.cache'
-
         self.base_url = 'http://www.gumtree.com.au'
 
-        self.jobs = [
-            'http://www.gumtree.com.au/s-flatshare-houseshare/west-end-brisbane/page-1/c18294l3005921?ad=offering&price=0.00__200.00',
-            'http://www.gumtree.com.au/s-flatshare-houseshare/highgate-hill-brisbane/page-1/c18294l3005884?ad=offering&price=0.00__200.00',
-            'http://www.gumtree.com.au/s-flatshare-houseshare/spring-hill-brisbane/page-1/c18294l3005758?ad=offering&price=0.00__200.00',
+        self.query_objects = [
+            GumtreeQuery(self.base_url, 'west-end-brisbane', 'c18294l3005921'),
+            GumtreeQuery(self.base_url, 'highgate-hill-brisbane', 'c18294l3005884'),
+            GumtreeQuery(self.base_url, 'spring-hill-brisbane', 'c18294l3005758'),
         ]
+
 
 
     def process(self):
@@ -74,32 +69,11 @@ class GumtreeScraper:
                 self.parse_ad(f.read())
             exit(0)
 
-        self.listing_results = self.doSearch()
-        print self.listing_results
-        pass
+        listings = []
 
-    def doSearch(self):
-        """
-        Performs the search against gumtree
-        """
+        for query in self.query_objects:
+            listings = listings + self.fetch_listings(query)
 
-        if self.arguments['--load-from-cache']:
-            with open(self.cache_file, 'r') as f:
-                content = f.read()
-
-        else:
-            #request = requests.get("http://www.gumtree.com.au/search?q=%s&search_location=%s&category=%s" % (self.query, self.location, self.category), headers=REQUEST_HEADERS)
-            url = "{0}/s-flatshare-houseshare/west-end-brisbane/page-1/c18294l3005921?ad=offering&price=0.00__200.00".format(
-                self.base_url)
-            logger.debug('Query URL: {0}'.format(url))
-            request = requests.get(url, headers=REQUEST_HEADERS)
-
-            with open(self.cache_file, 'w') as f:
-                f.write(request.content)
-                content = request.content
-
-        listings = self.parse(content)
-        #self.process_listing_item(listings[0])
         default_renderer = DefaultRenderer()
 
         if self.arguments['--output']:
@@ -112,8 +86,35 @@ class GumtreeScraper:
             rendered = default_renderer.render(listings)
             f.write(rendered.encode('utf-8').strip())
 
+        exit(0)
 
-    def parse(self, content):
+        self.queries = [q.make_url() for q in self.query_objects]
+
+        self.listing_results = self.doSearch()
+        print self.listing_results
+        pass
+
+    def fetch_listings(self, listing_query):
+        cache_file = 'cache/' + listing_query.cache_file_name()
+
+        if self.arguments['--load-from-cache']:
+            logger.debug('Loading from cache: {0}'.format(listing_query.location))
+            with open(cache_file, 'r') as f:
+                content = f.read()
+        else:
+            logger.debug('Fetching: {0}'.format(listing_query.location))
+            url = listing_query.make_url()
+            request = requests.get(url, headers=REQUEST_HEADERS)
+            content = request.content
+            with open(cache_file, 'w') as f:
+                f.write(content)
+            self.sleep()
+
+        listings = self.parse(content, listing_query)
+        return listings
+
+
+    def parse(self, content, query_object):
         logger.debug('Souping')
         souped = BeautifulSoup(content, "html5lib")
         logger.debug('Souping complete')
@@ -132,7 +133,7 @@ class GumtreeScraper:
                 find("a", class_="rs-ad-title").get("href")
             item_instance.summary = listing.find("p",
                                                  class_="word-wrap").contents[0]
-
+            item_instance.listing_query = query_object
             items.append(item_instance)
 
             #print listing
@@ -197,5 +198,5 @@ if __name__ == "__main__":
     now_local = now_server.astimezone(server_tz)
     print now_local
 
-    gumtree_scraper = GumtreeScraper('s-flatshare-houseshare')
+    gumtree_scraper = GumtreeScraper()
     gumtree_scraper.process()

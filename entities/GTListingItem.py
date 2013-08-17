@@ -24,3 +24,5 @@ class GTListingItem:
 
         self.body_raw = None
         self.features_raw = None
+
+        self.listing_query = None
