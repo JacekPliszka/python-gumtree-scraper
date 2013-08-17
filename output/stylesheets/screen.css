@@ -67,20 +67,20 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
 }
 
-/* line 8, ../sass/screen.scss */
+/* line 10, ../sass/screen.scss */
 .gt-ad {
   padding: 10px;
   border: 1px solid #ddd;
   font-family: 'Open Sans', sans-serif;
 }
-/* line 13, ../sass/screen.scss */
+/* line 15, ../sass/screen.scss */
 .gt-ad a {
   padding: 0.8em;
   color: green;
   text-decoration: none;
   font-size: 18px;
 }
-/* line 21, ../sass/screen.scss */
+/* line 22, ../sass/screen.scss */
 .gt-ad .summary {
   display: none;
 }
@@ -98,4 +98,20 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   -moz-column-gap: 20px;
   -webkit-column-count: 4;
   -webkit-column-gap: 20px;
+}
+/* line 42, ../sass/screen.scss */
+.gt-ad .features_raw #vip-ad-attr-features dd[id="c-shared_accomodation.smoking_s"] {
+  color: indianred;
+}
+/* line 46, ../sass/screen.scss */
+.gt-ad .features_raw #vip-ad-attr-features dd[id="c-shared_accomodation.preferredgender_s"] {
+  color: indianred;
+}
+/* line 50, ../sass/screen.scss */
+.gt-ad .features_raw #vip-ad-attr-features dd[id="c-shared_accomodation.numberbathrooms_s"] {
+  color: indianred;
+}
+/* line 54, ../sass/screen.scss */
+.gt-ad .features_raw #vip-ad-attr-features dd[id="c-shared_accomodation.numberbedrooms_s"] {
+  color: indianred;
 }

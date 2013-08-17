@@ -5,6 +5,8 @@
 
 @import "compass/reset";
 
+$highlight_colour: indianred;
+
 .gt-ad {
   padding: 10px;
   border: 1px solid #ddd;
@@ -13,13 +15,11 @@
   a {
     padding: 0.8em;
     color: green;
-    //color: #FFFFFF;
     text-decoration: none;
     font-size: 18px;
   }
 
   .summary {
-    //visibility: hidden;
     display: none;
   }
 
@@ -28,7 +28,6 @@
   }
 
   .features_raw {
-    //background: gainsboro;
     color: darkgray;
     font-size: 14px;
     padding: 1.0em;
@@ -38,8 +37,24 @@
     -webkit-column-count: 4;
     -webkit-column-gap: 20px;
     //-webkit-column-break-inside: avoid;
+
+    #vip-ad-attr-features {
+      dd[id="c-shared_accomodation.smoking_s"] {
+        color: $highlight_colour;
+      }
+
+      dd[id="c-shared_accomodation.preferredgender_s"] {
+        color: $highlight_colour;
+      }
+
+      dd[id="c-shared_accomodation.numberbathrooms_s"] {
+        color: $highlight_colour;
+      }
+
+      dd[id="c-shared_accomodation.numberbedrooms_s"] {
+        color: $highlight_colour;
+      }
+    }
+
   }
-
 }
-
-
