@@ -23,7 +23,7 @@ Options:
 import shutil
 from entities.GTAdItem import GTAdItem
 from entities.GTListingItem import GTListingItem
-from entities.GTQuery import GumtreeQuery
+from entities.GTQuery import GumtreeListingQuery, GumtreeAdQuery
 from renderers.default_renderer import DefaultRenderer
 
 __author__ = "Indika Piyasena"
@@ -55,12 +55,10 @@ class GumtreeScraper:
         self.base_url = 'http://www.gumtree.com.au'
 
         self.query_objects = [
-            GumtreeQuery(self.base_url, 'west-end-brisbane', 'c18294l3005921'),
-            GumtreeQuery(self.base_url, 'highgate-hill-brisbane', 'c18294l3005884'),
-            GumtreeQuery(self.base_url, 'spring-hill-brisbane', 'c18294l3005758'),
+            GumtreeListingQuery(self.base_url, 'west-end-brisbane', 'c18294l3005921'),
+            GumtreeListingQuery(self.base_url, 'highgate-hill-brisbane', 'c18294l3005884'),
+            GumtreeListingQuery(self.base_url, 'spring-hill-brisbane', 'c18294l3005758'),
         ]
-
-
 
     def process(self):
         if self.arguments['--debug-ad']:
@@ -111,7 +109,25 @@ class GumtreeScraper:
             self.sleep()
 
         listings = self.parse(content, listing_query)
+        for listing in listings:
+            ad_query = GumtreeAdQuery(listing.url)
+            self.fetch_ad(ad_query)
         return listings
+
+    def fetch_ad(self, ad_query):
+        cache_file = 'cache/' + ad_query.cache_file_name()
+
+        if os.path.exists(cache_file):
+            logger.debug('Loading from cache: {0}'.format(ad_query.url))
+            with open(cache_file, 'r') as f:
+                content = f.read()
+        else:
+            logger.debug('Fetching: {0}'.format(ad_query.url))
+            request = requests.get(ad_query.url, headers=REQUEST_HEADERS)
+            content = request.content
+            with open(cache_file, 'w') as f:
+                f.write(content)
+            self.sleep()
 
 
     def parse(self, content, query_object):

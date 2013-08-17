@@ -37,4 +37,5 @@ nosetests.xml
 
 
 cache/*.cache
+cache/http*
 output/.sass-cache
