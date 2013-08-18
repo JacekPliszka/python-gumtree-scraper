@@ -38,4 +38,7 @@ nosetests.xml
 
 cache/*.cache
 cache/http*
+cache/*.html
+
 output/.sass-cache
+output/feed.html

@@ -21,6 +21,8 @@ Options:
 
 
 """
+from entities.GumAd import GumAd
+
 from entities.GTListing import GTListing
 from entities.GTQuery import GumtreeListingQuery, GumtreeAdQuery
 from renderers.default_renderer import DefaultRenderer
@@ -42,8 +44,7 @@ from tzlocal import get_localzone
 from bs4 import BeautifulSoup
 from docopt import docopt
 
-logger = logging.getLogger(__name__)
-
+logger = logging.getLogger('gumtree_scraper')
 
 class GumtreeScraper:
     def __init__(self):
@@ -55,6 +56,8 @@ class GumtreeScraper:
         self.query_objects = [
             GumtreeListingQuery(self.base_url, 'west-end-brisbane',
                                 'c18294l3005921'),
+            GumtreeListingQuery(self.base_url, 'toowong-brisbane',
+                                'c18294l3005815'),
             GumtreeListingQuery(self.base_url, 'highgate-hill-brisbane',
                                 'c18294l3005884'),
             GumtreeListingQuery(self.base_url, 'spring-hill-brisbane',
@@ -112,20 +115,25 @@ class GumtreeScraper:
         return listings
 
     def fetch_ad(self, ad_query):
-        cache_file = 'cache/' + ad_query.cache_file_name()
 
-        if os.path.exists(cache_file):
-            logger.debug('Loading from cache: {0}'.format(ad_query.url))
-            with open(cache_file, 'r') as f:
-                content = f.read()
-        else:
-            logger.debug('Fetching: {0}'.format(ad_query.url))
-            request = requests.get(ad_query.url, headers=REQUEST_HEADERS)
-            content = request.content
-            with open(cache_file, 'w') as f:
-                f.write(content)
-            self.sleep()
-        return self.parse_ad(content)
+        gt_ad = GumAd(ad_query)
+        parsed = gt_ad.populate()
+        return parsed
+        #
+        # cache_file = 'cache/' + ad_query.cache_file_name()
+        #
+        # if os.path.exists(cache_file):
+        #     logger.debug('Loading from cache: {0}'.format(ad_query.url))
+        #     with open(cache_file, 'r') as f:
+        #         content = f.read()
+        # else:
+        #     logger.debug('Fetching: {0}'.format(ad_query.url))
+        #     request = requests.get(ad_query.url, headers=REQUEST_HEADERS)
+        #     content = request.content
+        #     with open(cache_file, 'w') as f:
+        #         f.write(content)
+        #     self.sleep()
+        # return self.parse_ad(content)
 
     def parse(self, content, query_object):
         logger.debug('Creating a beautiful soup...')
@@ -163,17 +171,9 @@ class GumtreeScraper:
         listing_item.features_raw = result_tuple[1]
         pass
 
-    def parse_ad(self, ad_content):
-        logger.debug('Souping ad')
-        souped = BeautifulSoup(ad_content, "html5lib")
-        main_box = souped.find("div", {"class": "white-box"})
-        main_content = main_box.find("p", {"id": "vip-description"})
-        features = main_box.find("div", {"id": "vip-ad-attr-features"})
-        return main_content, features
-
     def sleep(self):
         random_time = 5
-        logger.debug('Sleeping for: {0}'.format(random_time))
+        logger.debug('Sleeping for: {0} seconds...'.format(random_time))
         time.sleep(random_time)
         pass
 
