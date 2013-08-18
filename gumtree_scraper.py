@@ -2,7 +2,8 @@
 
 """GumtreeScraper
 
-Gumtree scraper written in Python
+Gumtree scraper written in Python.
+Specifically built form finding house-share.
 
 Derived from
 Copyright 2013 Oli Allen <oli@oliallen.com>
@@ -20,9 +21,7 @@ Options:
 
 
 """
-import shutil
-from entities.GTAdItem import GTAdItem
-from entities.GTListingItem import GTListingItem
+from entities.GTListing import GTListing
 from entities.GTQuery import GumtreeListingQuery, GumtreeAdQuery
 from renderers.default_renderer import DefaultRenderer
 
@@ -32,10 +31,9 @@ USER_AGENT = "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWe
 
 REQUEST_HEADERS = {'User-agent': USER_AGENT, }
 
-import os, sys
+import os
 import logging
 import requests
-import re
 import pytz
 import datetime
 import time
@@ -55,9 +53,12 @@ class GumtreeScraper:
         self.base_url = 'http://www.gumtree.com.au'
 
         self.query_objects = [
-            GumtreeListingQuery(self.base_url, 'west-end-brisbane', 'c18294l3005921'),
-            GumtreeListingQuery(self.base_url, 'highgate-hill-brisbane', 'c18294l3005884'),
-            GumtreeListingQuery(self.base_url, 'spring-hill-brisbane', 'c18294l3005758'),
+            GumtreeListingQuery(self.base_url, 'west-end-brisbane',
+                                'c18294l3005921'),
+            GumtreeListingQuery(self.base_url, 'highgate-hill-brisbane',
+                                'c18294l3005884'),
+            GumtreeListingQuery(self.base_url, 'spring-hill-brisbane',
+                                'c18294l3005758'),
         ]
 
     def process(self):
@@ -83,20 +84,14 @@ class GumtreeScraper:
             f.write(str(datetime.datetime.now()))
             rendered = default_renderer.render(listings)
             f.write(rendered.encode('utf-8').strip())
-
-        exit(0)
-
-        self.queries = [q.make_url() for q in self.query_objects]
-
-        self.listing_results = self.doSearch()
-        print self.listing_results
         pass
 
     def fetch_listings(self, listing_query):
         cache_file = 'cache/' + listing_query.cache_file_name()
 
         if self.arguments['--load-from-cache']:
-            logger.debug('Loading from cache: {0}'.format(listing_query.location))
+            logger.debug(
+                'Loading from cache: {0}'.format(listing_query.location))
             with open(cache_file, 'r') as f:
                 content = f.read()
         else:
@@ -130,35 +125,30 @@ class GumtreeScraper:
             with open(cache_file, 'w') as f:
                 f.write(content)
             self.sleep()
-
         return self.parse_ad(content)
 
     def parse(self, content, query_object):
-        logger.debug('Souping')
+        logger.debug('Creating a beautiful soup...')
         souped = BeautifulSoup(content, "html5lib")
-        logger.debug('Souping complete')
 
-        listing_query = souped.find_all("div", {"class": "rs-ad-field",
-                                                "class": "rs-ad-detail"})
+        query = souped.find_all("div", {"class": "rs-ad-field",
+                                        "class": "rs-ad-detail"})
 
-        logger.debug('Number of listings: {0}'.format(len(listing_query)))
+        logger.debug('Number of listings: {0}'.format(len(query)))
 
-        items = []
+        result_set = []
 
-        for listing in listing_query:
+        for listing in query:
             title = listing.find("a", class_="rs-ad-title").contents[0]
-            item_instance = GTListingItem(title=title)
-            item_instance.url = self.base_url + listing. \
+            gt_listing = GTListing(title=title)
+            gt_listing.url = self.base_url + listing. \
                 find("a", class_="rs-ad-title").get("href")
-            item_instance.summary = listing.find("p",
-                                                 class_="word-wrap").contents[0]
-            item_instance.listing_query = query_object
-            items.append(item_instance)
+            gt_listing.summary = listing.find("p",
+                                              class_="word-wrap").contents[0]
+            gt_listing.listing_query = query_object
+            result_set.append(gt_listing)
 
-            #print listing
-            #print '<a href="{0}">Link</a>'.format(item_instance.url)
-
-        return items
+        return result_set
 
     def process_listing_item(self, listing_item):
         print listing_item.url
@@ -171,7 +161,6 @@ class GumtreeScraper:
         result_tuple = self.parse_ad(content)
         listing_item.body_raw = result_tuple[0]
         listing_item.features_raw = result_tuple[1]
-
         pass
 
     def parse_ad(self, ad_content):
@@ -182,13 +171,11 @@ class GumtreeScraper:
         features = main_box.find("div", {"id": "vip-ad-attr-features"})
         return main_content, features
 
-
     def sleep(self):
         random_time = 5
         logger.debug('Sleeping for: {0}'.format(random_time))
         time.sleep(random_time)
         pass
-
 
     def configure_logging(self):
         logger.setLevel(logging.DEBUG)

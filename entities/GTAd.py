@@ -1,4 +1,4 @@
-class GTAdItem:
+class GTAd:
     """
     An individual gumtree item
     """

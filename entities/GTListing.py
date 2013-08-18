@@ -1,4 +1,4 @@
-class GTListingItem:
+class GTListing:
     """
     An individual gumtree item
     """
