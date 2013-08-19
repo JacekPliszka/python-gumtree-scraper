@@ -21,7 +21,7 @@ Options:
 
 
 """
-from entities.GumAd import GumAd
+from entities.GTAd import GTAd
 
 from entities.GTListing import GTListing
 from entities.GTQuery import GumtreeListingQuery, GumtreeAdQuery
@@ -109,31 +109,16 @@ class GumtreeScraper:
         listings = self.parse(content, listing_query)
         for listing in listings:
             ad_query = GumtreeAdQuery(listing.url)
-            main_content, features = self.fetch_ad(ad_query)
-            listing.body_raw = main_content
-            listing.features_raw = features
+            gt_ad = self.fetch_ad(ad_query)
+            listing.body_raw = gt_ad.main_content
+            listing.features_raw = gt_ad.features
+            listing.ad_id = gt_ad.ad_id
         return listings
 
     def fetch_ad(self, ad_query):
-
-        gt_ad = GumAd(ad_query)
-        parsed = gt_ad.populate()
-        return parsed
-        #
-        # cache_file = 'cache/' + ad_query.cache_file_name()
-        #
-        # if os.path.exists(cache_file):
-        #     logger.debug('Loading from cache: {0}'.format(ad_query.url))
-        #     with open(cache_file, 'r') as f:
-        #         content = f.read()
-        # else:
-        #     logger.debug('Fetching: {0}'.format(ad_query.url))
-        #     request = requests.get(ad_query.url, headers=REQUEST_HEADERS)
-        #     content = request.content
-        #     with open(cache_file, 'w') as f:
-        #         f.write(content)
-        #     self.sleep()
-        # return self.parse_ad(content)
+        gt_ad = GTAd(ad_query)
+        gt_ad.populate()
+        return gt_ad
 
     def parse(self, content, query_object):
         logger.debug('Creating a beautiful soup...')

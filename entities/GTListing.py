@@ -25,4 +25,6 @@ class GTListing:
         self.body_raw = None
         self.features_raw = None
 
+        self.ad_id = None
+
         self.listing_query = None
