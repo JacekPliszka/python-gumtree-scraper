@@ -39,6 +39,7 @@ import requests
 import pytz
 import datetime
 import time
+import random
 
 from tzlocal import get_localzone
 from bs4 import BeautifulSoup
@@ -164,7 +165,7 @@ class GumtreeScraper:
         pass
 
     def sleep(self):
-        random_time = 5
+        random_time = random.randint(3, 20)
         logger.debug('Sleeping for: {0} seconds...'.format(random_time))
         time.sleep(random_time)
         pass
