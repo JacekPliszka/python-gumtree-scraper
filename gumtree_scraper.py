@@ -62,6 +62,13 @@ class GumtreeScraper:
                                 'c18294l3005884'),
             GumtreeListingQuery(self.base_url, 'spring-hill-brisbane',
                                 'c18294l3005758'),
+            GumtreeListingQuery(self.base_url, 'milton-brisbane',
+                                'c18294l3005798'),
+            GumtreeListingQuery(self.base_url, 'auchenflower-brisbane',
+                                'c18294l3005770'),
+
+            # http://www.gumtree.com.au/s-flatshare-houseshare/auchenflower-brisbane/c18294l3005770
+            # http://www.gumtree.com.au/s-flatshare-houseshare/milton-brisbane/c18294l3005798
         ]
 
     def process(self):
