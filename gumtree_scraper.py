@@ -106,8 +106,10 @@ class GumtreeScraper:
             with open(cache_file, 'r') as f:
                 content = f.read()
         else:
-            logger.debug('Fetching: {0}'.format(listing_query.location))
             url = listing_query.make_url()
+            logger.info('Fetching: {0}'.format(listing_query.location))
+            logger.info('Fetching: {0}'.format(url))
+            
             request = requests.get(url, headers=REQUEST_HEADERS)
             content = request.content
             with open(cache_file, 'w') as f:
@@ -173,7 +175,7 @@ class GumtreeScraper:
     def configure_logging(self):
         logger.setLevel(logging.DEBUG)
         ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
+        ch.setLevel(logging.INFO)
         formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
