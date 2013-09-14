@@ -57,7 +57,9 @@ class GumtreeScraper:
 
         self.query_objects = [
             GumtreeListingQuery(self.base_url, 'west-end-brisbane',
-                                'c18294l3005921'),
+                                'c18294l3005921', page=1),
+            GumtreeListingQuery(self.base_url, 'west-end-brisbane',
+                                'c18294l3005921', page=2),
             GumtreeListingQuery(self.base_url, 'toowong-brisbane',
                                 'c18294l3005815'),
             GumtreeListingQuery(self.base_url, 'highgate-hill-brisbane',
