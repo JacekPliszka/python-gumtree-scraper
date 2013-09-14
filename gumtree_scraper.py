@@ -24,7 +24,8 @@ Options:
 from entities.GTAd import GTAd
 
 from entities.GTListing import GTListing
-from entities.GTQuery import GumtreeListingQuery, GumtreeAdQuery
+from entities.GTListingQuery import GumtreeListingQuery
+from entities.GTQuery import GumtreeAdQuery
 from renderers.default_renderer import DefaultRenderer
 
 __author__ = "Indika Piyasena"
@@ -50,7 +51,7 @@ logger = logging.getLogger('gumtree_scraper')
 class GumtreeScraper:
     def __init__(self):
         self.configure_logging()
-        self.arguments = docopt(__doc__, version='GumtreeScraper 0.1')
+        self.arguments = docopt(__doc__, version='GumtreeScraper 0.2')
 
         self.base_url = 'http://www.gumtree.com.au'
 
@@ -67,9 +68,6 @@ class GumtreeScraper:
                                 'c18294l3005798'),
             GumtreeListingQuery(self.base_url, 'auchenflower-brisbane',
                                 'c18294l3005770'),
-
-            # http://www.gumtree.com.au/s-flatshare-houseshare/auchenflower-brisbane/c18294l3005770
-            # http://www.gumtree.com.au/s-flatshare-houseshare/milton-brisbane/c18294l3005798
         ]
 
     def process(self):
