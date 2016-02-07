@@ -7,11 +7,12 @@ Copyright 2013 Oli Allen <oli@oliallen.com>
 """
 
 USER_AGENT = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)"
-REQUEST_HEADERS = {'User-agent': USER_AGENT,}
+REQUEST_HEADERS = {'User-agent': USER_AGENT, }
 
 import requests
 import re
 from bs4 import BeautifulSoup
+
 
 class SearchListing:
     """
@@ -20,24 +21,21 @@ class SearchListing:
 
     def __init__(self, category, query="", location=""):
         self.category = category
-        self.query = query    
+        self.query = query
         self.location = location
-
-
-
-        self.listing_results = self.doSearch()
-
+        self.listing_results = self.do_search()
 
     def __str__(self):
         return "Search listing"
 
-    def doSearch(self):
+    def do_search(self):
         """
         Performs the search against gumtree
         """
-
-        request = requests.get("http://www.gumtree.com/search?q=%s&search_location=%s&category=%s" % (self.query, self.location, self.category), headers=REQUEST_HEADERS)
-
+        # % (self.query, self.location, self.category)
+        request = requests.get(
+            "http://www.gumtree.pl/s-mieszkania-i-domy-sprzedam-i-kupie/targowek/mieszkanie/v1c9073l3200018a1dwp1",
+            headers=REQUEST_HEADERS)
 
         if request.status_code == 200:
             # Got a valid response
@@ -45,31 +43,39 @@ class SearchListing:
             listing_results = []
 
             souped = BeautifulSoup(request.text, "html5lib")
-            for listings_wrapper in souped.find_all("ul", class_="ad-listings"):
-                for listing in listings_wrapper.find_all("li", class_="offer-sale"):
-                    title = listing.find("a", class_="description").get("title")
+            for listings_wrapper in souped.find_all("div", class_="view"):
+                for listing in listings_wrapper.find_all("li", class_="result pictures"):
+                    title = listing.find("div", class_="title").find("a").text
                     item_instance = GTItem(title=title)
-                    item_instance.url = listing.find("a", class_="description").get("href")
-                    item_instance.price = listing.find("span", class_="price").string
-                    item_instance.summary = listing.find("div", class_="ad-description").find("span").string
-                    item_instance.location =  listing.find("span", class_="location").string
-                    item_instance.thumbnail = listing.find("img", class_="thumbnail").get("src")
-                    item_instance.adref = listing.find("div", class_="ad-save").get("data-ad-id")
+                    item_instance.url = listing.find("div", class_="title").find("a").get("href")
+                    amount_result = listing.find("span", class_="amount")
+                    if amount_result is not None:
+                        item_instance.price = amount_result.string
+                    desc_result = listing.find("div", class_="description")
+                    desc_result_span = desc_result.find("span")
+                    if desc_result_span is not None:
+                        item_instance.summary = desc_result_span.string
+                    else:
+                        item_instance.summary = desc_result.string
+                    item_instance.location = listing.find("div", class_="category-location").find("span").string
+                    item_instance.thumbnail = listing.find("img", class_="thumbM").get("src")
+                    # item_instance.adref = listing.find("div", class_="ad-save").get("data-ad-id")
 
                     listing_results.append(item_instance)
             return listing_results
         else:
             # TODO: Add error handling
-            print "Server returned code %s" % request.status_code
+            print("Server returned code %s" % request.status_code)
             return []
-
 
 
 class GTItem:
     """
     An individual gumtree item
     """
-    def __init__(self, title, summary="", description="", thumbnail="", price="", location="", adref="", url="", contact_name="", contact_number="", images=[]):
+
+    def __init__(self, title, summary="", description="", thumbnail="", price="", location="", adref="", url="",
+                 contact_name="", contact_number="", images=[]):
         self.title = title
         self.summary = summary
         self.thumbnail = thumbnail
@@ -77,20 +83,22 @@ class GTItem:
         self.location = location
         self.adref = adref
         self.url = url
-                
+
         self._description = None
         self._contact_name = None
         self._contact_number = None
         self._images = None
 
         self._longitude = None
-        self.latitude = None
+        self._latitude = None
+
+    def __repr__(self):
+        return 'title: %s\n price %s\n url %s\n summary %s\n' % (self.title, self.price, self.url, self.summary)
 
     @property
     def images(self):
         if not self._images:
-            
-            self._images = ['test',]
+            self._images = ['test', ]
         return self._images
 
     @property
@@ -98,7 +106,7 @@ class GTItem:
         if not self._description:
             self.getFullInformation()
         return self._description
-	
+
     @property
     def contact_name(self):
         if not self._contact_name:
@@ -125,7 +133,6 @@ class GTItem:
 
     def __str__(self):
         return self.title
-	
 
     def getFullInformation(self):
         """
@@ -142,7 +149,7 @@ class GTItem:
                 self._description = ""
             contact = souped.find(class_="phone")
             if not contact:
-                self._contact_name, self._contact_number = ["",""]
+                self._contact_name, self._contact_number = ["", ""]
             else:
                 if " on " in contact.string:
                     self._contact_name, self._contact_number = contact.string.split(" on ")
@@ -151,12 +158,13 @@ class GTItem:
 
             gmaps_link = souped.find("a", class_="open_map")
             if gmaps_link:
-                self._latitude, self._longitude = re.search("center=(-?\w.*),(-?\d.*)&sensor", gmaps_link.get("data-target")).groups()
+                self._latitude, self._longitude = re.search("center=(-?\w.*),(-?\d.*)&sensor",
+                                                            gmaps_link.get("data-target")).groups()
             else:
                 self._latitude, self._longitude = ["", ""]
 
             return
         else:
             # TODO: Add error handling
-            print "Server returned code %s for %s" % (request.status_code, url)
+            print("Server returned code %s for %s" % (request.status_code, self.url))
             return []
