@@ -27,8 +27,10 @@ all_result = session.query(GTItem).order_by(GTItem.creation_date.desc()).limit(1
 
 for result in all_result:
     fe = fg.add_entry()
-    fe.id('http://www.gumtree.pl/' + result.url)
-    fe.title(result.title)
+    url = 'http://www.gumtree.pl' + result.url
+    fe.id(url)
+    fe.link(href=url, rel='alternate')
+    fe.title(result.price + ' ' + result.title)
     fe.description(result.summary)
 
 fg.rss_file('rss.xml')
