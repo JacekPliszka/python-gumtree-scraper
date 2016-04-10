@@ -59,6 +59,7 @@ class SearchListing:
                         "div",
                         class_="category-location"
                     ).find("span").string
+                    item_instance.summary = item_instance.summary.strip()
                     item_instance.thumbnail = listing.find("img", class_="thumbM").get("src")
                     # item_instance.adref = listing.find("div", class_="ad-save").get("data-ad-id")
 

@@ -47,8 +47,10 @@ for url in config['urls']:
             matched = session.query(GTItem).filter(
                 GTItem.url == result.url
             ).all()
-            if len(matched) == 0:
-                session.add(result)
+            if matched:
+                searchListing.next_page = None
+                break
+            session.add(result)
             print(
                 u"\n{0.price} {0.date} {0.title}\n{0.summary}".format(result)
             )
