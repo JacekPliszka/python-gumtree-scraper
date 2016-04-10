@@ -12,6 +12,7 @@ class GTItem(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String)
+    date = Column(String)
     summary = Column(String)
     thumbnail = Column(String)
     price = Column(String)
@@ -35,6 +36,7 @@ class GTItem(Base):
         self.url = url
         self.creation_date = datetime.datetime.now()
 
+        self.date = ''
         self._description = None
         self._contact_name = None
         self._contact_number = None

@@ -1,0 +1,9 @@
+{
+    "baseurl": "http://www.gumtree.pl",
+    "urls": [
+        "http://www.gumtree.pl/s-mieszkania-i-domy-sprzedam-i-kupie/ursynow/mieszkanie/v1c9073l3200020a1dwp1?nr=2",
+        "http://www.gumtree.pl/s-mieszkania-i-domy-sprzedam-i-kupie/ursynow/mieszkanie/v1c9073l3200020a1dwp1?nr=3"
+    ],
+    "excluded_words": ["Natolin", "Kabaty", "Imielin", "Stryjeńskich", "parter", "ostatnie piętro", "Piętro 7/7", "Gawota", "kłobuck", "makolągwy", "14 piętro", "8 piętro", "w Pyrach", "na kabatach", "lasek brzozowy", "500 metrów od wejścia do Metra Wilanowska", "piętro 4/4", "taneczna", "na dziewiątym piętrze", "Piętro 6/6", "Mandarynki", "Wierzbno", "Goplańskiej", "jałtańskiej", "7 piętrze w 7 piętrowym", "piaseczno", "józefosław", "gocław", "3 piętro.Blok 3 piętrowy", "ochota", "ogródek"],
+    "price_range": [100000, 450000]
+}
