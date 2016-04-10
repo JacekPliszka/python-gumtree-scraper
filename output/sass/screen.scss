@@ -1,0 +1,67 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+
+@import "compass/reset";
+
+$highlight_colour: indianred;
+
+.gt-ad {
+  padding: 10px;
+  border: 1px solid #ddd;
+  font-family: 'Open Sans', sans-serif;
+
+  a {
+    padding: 0.8em;
+    color: green;
+    text-decoration: none;
+    font-size: 18px;
+  }
+
+  .summary {
+    display: none;
+  }
+
+  .ad_id {
+    margin-top: 10px;
+    margin-left: 15px;
+    font-size: 12px;
+    color: darkgray;
+  }
+
+  .body_raw {
+    padding: 1.0em;
+  }
+
+  .features_raw {
+    color: darkgray;
+    font-size: 14px;
+    padding: 1.0em;
+    height: 100px;
+    -moz-column-count: 4;
+    -moz-column-gap: 20px;
+    -webkit-column-count: 4;
+    -webkit-column-gap: 20px;
+    //-webkit-column-break-inside: avoid;
+
+    #vip-ad-attr-features {
+      dd[id="c-shared_accomodation.smoking_s"] {
+        color: $highlight_colour;
+      }
+
+      dd[id="c-shared_accomodation.preferredgender_s"] {
+        color: $highlight_colour;
+      }
+
+      dd[id="c-shared_accomodation.numberbathrooms_s"] {
+        color: $highlight_colour;
+      }
+
+      dd[id="c-shared_accomodation.numberbedrooms_s"] {
+        color: $highlight_colour;
+      }
+    }
+
+  }
+}

@@ -37,3 +37,9 @@ nosetests.xml
 
 .idea
 
+cache/*.cache
+cache/http*
+cache/*.html
+
+output/.sass-cache
+output/feed.html
